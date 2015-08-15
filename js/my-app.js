@@ -16,21 +16,35 @@ var $$ = Dom7;
 // Add view
 var mainView = myApp.addView('.view-main');
 
-/*http://www.idangero.us/framework7/forum/#!/getting-started:how-to-use-template7data-on*/
-/*
-https://github.com/nolimits4web/ToDo7/blob/master/index.html#L92
-https://github.com/nolimits4web/ToDo7/blob/master/index.html#L44
-https://github.com/nolimits4web/ToDo7/blob/master/js/todo7.js#L53
-*/
+var todoItems = localStorage.taskList ? JSON.parse(localStorage.taskList) : [];
+
+
 // Build Todo HTML using Template7 template engine
 var todoItemTemplateSource = $$('#todo-item-template').html();
 var todoItemTemplate = Template7.compile(todoItemTemplateSource);
+
 function buildTodoListHtml() {
-    var renderedList = todoItemTemplate({name: 'Testing'});
+    var renderedList = todoItemTemplate(todoItems);
     $$('.todo-items-list').html(renderedList);
 }
+
 // Build HTML on App load
 buildTodoListHtml();
+
+$$('.swipeout').on('deleted', function () {
+    debugger;
+    var id = $$(this).find('a').attr('data-task-id') * 1;
+    for (var i = 0; i < todoItems.length; i++) {
+        if (todoItems[i].id === id){
+            index = i;
+        }
+    }
+    if (typeof(index) !== 'undefined') {
+        debugger;
+        todoItems.splice(index, 1);
+        localStorage.setItem('taskList', JSON.stringify(todoItems));
+    }
+});
 
 /*I don't know why on Index we must use this to pass context values to template*/
 /*mainView.router.load({
@@ -40,10 +54,12 @@ buildTodoListHtml();
     }
 })*/
 
-/*Check if task List exists on LocalStorage*/
-if (!localStorage.taskList) {
-    localStorage.setItem('taskList', JSON.stringify([]));
-};
+/*http://www.idangero.us/framework7/forum/#!/getting-started:how-to-use-template7data-on*/
+/*
+https://github.com/nolimits4web/ToDo7/blob/master/index.html#L92
+https://github.com/nolimits4web/ToDo7/blob/master/index.html#L44
+https://github.com/nolimits4web/ToDo7/blob/master/js/todo7.js#L53
+*/
 
 $$(document).on('ajaxStart', function (e) {
     myApp.showIndicator();
@@ -57,15 +73,21 @@ $$('.popover a').on('click', function () {
     myApp.closeModal('.popover');
 });
 
-
 myApp.onPageInit('form-task', function (page) {
     /*Capture task-form input*/
     $$('.form-to-json').on('click', function(){
       var formData = myApp.formToJSON('#task-form');
-      debugger;
-      var taskList = JSON.parse(localStorage.getItem('taskList'));
-      taskList.push(JSON.stringify(formData));
-      localStorage.setItem('taskList', JSON.stringify(taskList));
-      alert(localStorage.taskList);
+      if (formData.taskDescription){
+        var lastItem = todoItems[todoItems.length - 1];
+        var task = {
+            id: todoItems.length > 0 ? (lastItem.id + 1) : 0,
+            description: formData.taskDescription
+        };
+        todoItems.push(task);
+        localStorage.setItem('taskList', JSON.stringify(todoItems));
+        //buildTodoListHtml();
+        mainView.router.back();
+        document.location.reload();
+      }
     });
 })

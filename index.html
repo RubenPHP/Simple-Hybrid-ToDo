@@ -30,13 +30,9 @@
                   <a href="#" class="back link icon-only"></i>
                   </a>
                 </div>
-                <div class="center" id="todo-item-template">Simple ToDo {{name}}</div>
-                <div class="todo-items-list"></div>
+                <div class="center">Simple ToDo</div>
                 <div class="right">
                   <a href="form-task.html" class="link"> <i class="icon icon-plus"></i>
-                  </a>
-                  <a href="#" class="link">
-                    <i class="icon icon-settings"></i>
                   </a>
                   <a href="#" data-popover=".popover-menu" class="open-popover icon-only link">
                     <i class="icon ks-icon-more"></i>
@@ -46,9 +42,7 @@
             </div>
             <div class="page-content">
               <div class="content-block">
-                <p>
-                  Sub Navbar is useful when you need to put any additional elements into Navbar, like Tab Links or Search Bar. It also remains visible when Navbar hidden.
-                </p>
+                <div class="todo-items-list"></div>
               </div>
             </div>
           </div>
@@ -65,6 +59,26 @@
         </div>
       </div>
     </div>
+
+    <!-- Template -->
+    <script id="todo-item-template" type="text/template">
+      <div class="center list-block">Task list:
+        <ul>
+          {{#each this}}
+            <li class="swipeout">
+              <div class="swipeout-content item-content">
+                <div class="item-inner">{{description}}</div>
+              </div>
+              <div class="swipeout-actions-right">
+                <a href="#" data-task-id="{{id}}" class="swipeout-delete" data-confirm="Are you sure want to delete this item?" data-confirm-title="Delete?">Delete</a>
+              </div>
+            </li>
+          {{else}}
+            No tasks
+          {{/each}}
+        </ul>
+      </div>
+    </script>
     <!-- Path to Framework7 Library JS-->
     <script type="text/javascript" src="js/framework7.min.js"></script>
     <!-- Path to your app js-->
